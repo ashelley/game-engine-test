@@ -44,6 +44,10 @@ inline vec3 operator+(vec3 &v1, vec3 &v2) {
     return vec3(v1.e[0]+v2.e[0], v1.e[1]+v2.e[1], v1.e[2]+v2.e[2]);
 }
 
+inline vec3 operator-(vec3 &v1, vec3 &v2) {
+    return vec3(v1.e[0]-v2.e[0], v1.e[1]-v2.e[1], v1.e[2]-v2.e[2]);
+}
+
 inline vec3 operator*(float t,vec3 &v) {
     return vec3(v.e[0]*t, v.e[1]*t, v.e[2]*t);
 } 
@@ -54,4 +58,8 @@ inline vec3 operator/(vec3 v,float t) {
 
 inline vec3 unit_vector(vec3 v) {
     return v / v.length();
+}
+
+float dot(vec3 &v1, vec3 &v2) {
+    return v1.e[0]*v2.e[0] + v1.e[1]*v2.e[1] + v1.e[2]*v2.e[2];
 }
