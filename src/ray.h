@@ -6,17 +6,17 @@
 class ray {
     public:        
         ray() {}
-        ray(vec3& a, vec3& b) {
+        ray(const vec3& a, const vec3& b) {
             A = a;
             B = b;
         }
-        vec3 origin() {
+        vec3 origin() const {
             return A;
         }
-        vec3 direction() {
+        vec3 direction() const {
             return B;
         }
-        vec3 point_at(float distance) {
+        vec3 point_at(float distance) const {
             return A + distance*B;
         }
 

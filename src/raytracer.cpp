@@ -27,7 +27,7 @@ void TestPattern() {
     }    
 }
 
-float HitSphere(vec3& center, float radius, ray& r) {
+float HitSphere(vec3 center, float radius, ray& r) {
     vec3 distance = r.origin() - center;
 
     float a = dot(r.direction(), r.direction());
@@ -74,7 +74,7 @@ vec3 SampleNormals(ray& r, hitable *world) {
     return SampleSkyBox(r);
 }
 
-vec3 SampleLitSurface(ray& r, hitable *world) {
+vec3 SampleLitSurface(ray r, hitable *world) {
     hit_record rec;
     if(world->hit(r, 0.001, FLT_MAX, rec)) {
         vec3 target = rec.p + rec.normal + RandomPointInUnitSphere();
