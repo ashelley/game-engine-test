@@ -5,10 +5,10 @@
 #include "sphere.h"
 #include "hitable_list.h"
 
-#if 0
+#if 1
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
-#if 1
+#if 0
 #define drand48() (real32)RandomNextUInt32(&GlobalRandomSeries)/(1.0+(real32)MaxRandomNumber)
 #endif
 
@@ -76,7 +76,7 @@ vec3 SampleNormals(ray& r, hitable *world) {
 
 vec3 SampleLitSurface(ray& r, hitable *world) {
     hit_record rec;
-    if(world->hit(r, 0.0, FLT_MAX, rec)) {
+    if(world->hit(r, 0.001, FLT_MAX, rec)) {
         vec3 target = rec.p + rec.normal + RandomPointInUnitSphere();
         return 0.5*SampleLitSurface(ray(rec.p, target - rec.p), world);
     }
@@ -90,7 +90,7 @@ vec3 LinearToSRGB(vec3 color) {
 int main() {
     int nx = 800;
     int ny = 400;
-    int ns = 100;
+    int ns = 400;
     
     // vec3 bottomLeft(-2.0, -1.0, -1.0);
     // vec3 horizontal(4.0, 0.0, 0.0);
