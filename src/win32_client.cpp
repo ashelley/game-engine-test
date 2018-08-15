@@ -10,10 +10,6 @@
 //#include <wingdi.h>
 //#include "win32_util.cpp"
 
-typedef unsigned char u8;
-typedef unsigned int u32;
-typedef unsigned long long u64;
-
 struct win32_offscreen_buffer {
     BITMAPINFO Info;
     void* Memory;
@@ -24,36 +20,14 @@ struct win32_offscreen_buffer {
 
 static bool Record;
 static bool Running = true;
+
 static win32_offscreen_buffer GlobalBackBuffer;
+
+#include "defines.h"
+#include "game.cpp"
 
 //static HBITMAP BitmapHandle;
 //static HDC DeviceContext;
-
-static void RenderWeirdGradient(win32_offscreen_buffer *Buffer, int XOffset, int YOffset) {
-	u8 *Row = (u8 *)Buffer->Memory;
-	int Pitch = Buffer->BytesPerPixel * Buffer->Width;
-
-	for (int Y = 0; Y < Buffer->Height; Y++) {
-		u32 *Pixel = (u32 *)Row;
-		for (int X = 0; X < Buffer->Width; X++) {
-
-			// BB GG RR xx
-			// *Pixel++ = X + XOffset;//(u8)X;
-			// *Pixel++ = Y + YOffset;//(u8)Y;
-			// *Pixel++ = 0;
-			// *Pixel++ = 0;
-
-            u8 R = 0;
-            u8 G = (X + XOffset);
-            u8 B = (Y + YOffset);
-            //u8 A = 255;
-
-            u32 Color = ((B << 0) | (G <<8) | (R << 16)) /* | (A << 24)*/;
-            *Pixel++ = Color;
-		}
-		Row += Pitch;
-	}
-}
 
 static void Win32UpdateWindow(win32_offscreen_buffer *Buffer, HDC hdc,RECT *WindowRect, int x, int y, int width, int height) {
 
@@ -107,7 +81,7 @@ static void Win32ResizeDIBSection(win32_offscreen_buffer *Buffer, int width, int
     int BitMapMemorySize = Buffer->BytesPerPixel * Buffer->Width * Buffer->Height;
     Buffer->Memory = VirtualAlloc(0, BitMapMemorySize, MEM_COMMIT, PAGE_READWRITE);
 
-    RenderWeirdGradient(&GlobalBackBuffer, 128, 0);
+    //RenderWeirdGradient(&GlobalBackBuffer, 128, 0);
     
 
 #endif
@@ -268,7 +242,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
             DispatchMessage(& msg);
         }
 
-        RenderWeirdGradient(&GlobalBackBuffer, xOffset, yOffset);
+        offscreen_buffer Buffer;
+        Buffer.Memory = GlobalBackBuffer.Memory;
+        Buffer.Width = GlobalBackBuffer.Width;
+        Buffer.Height = GlobalBackBuffer.Height;
+        Buffer.BytesPerPixel = GlobalBackBuffer.BytesPerPixel;
+
+        GameUpdateAndRender(&Buffer);
+
+        //RenderWeirdGradient(&GlobalBackBuffer, xOffset, yOffset);
 
         RECT ClientRect;
         GetClientRect(Window, &ClientRect);        
