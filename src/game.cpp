@@ -80,9 +80,16 @@ static void DrawLineWithoutCalculatingNumberPixelsNeeded(int x0, int y0, int x1,
 		u8 B = color.b();
 
 		u32 *Pixel = StartAt + x - (y * Buffer->Width); // start of memory is the top off the buffer but we are drawing bottom to top so we substract y
-		*Pixel = ((255 << 0) | (0 << 8) | (255 << 16));
+		*Pixel = ((B << 0) | (G << 8) | (R<< 16));
 
 	}
+}
+
+static float AbsoluteValue(float a) {
+	if (a < 0) {
+		return a * -1;
+	}
+	return a;
 }
 
 static int AbsoluteValue(int a) {
@@ -93,16 +100,16 @@ static int AbsoluteValue(int a) {
 }
 
 static void Swap(int *a, int *b) {
-	int old = *a;
+	int old = *b;
 	*b = *a;
-	*b = old;
+	*a = old;
 }
 
 static void DrawLine(int x0, int y0, int x1, int y1, offscreen_buffer *Buffer, vec3 color) {
 
 	u32 *StartAt = (u32 *)Buffer->Memory + (Buffer->Width * Buffer->Height) - Buffer->Width; // start at bottom corner as 0,0
 
-	bool steep;
+	bool steep = false;
 
 	if(AbsoluteValue(x0-x1) < AbsoluteValue(y0-y1)) {
 		steep = true;
@@ -115,9 +122,9 @@ static void DrawLine(int x0, int y0, int x1, int y1, offscreen_buffer *Buffer, v
 		Swap(&y0, &y1);
 	}
 
-    for (int x=x0; x<=x1; x++) { 
-        float t = (x-x0)/(float)(x1-x0); 
-        int y = y0*(1.-t) + y1*t; 				
+	for (int x = x0; x <= x1; x++) {
+		float t = (x - x0) / (float)(x1 - x0);
+		int y = y0 * (1. - t) + y1 * t;
 
 		u8 R = color.r();
 		u8 G = color.g();
@@ -131,7 +138,8 @@ static void DrawLine(int x0, int y0, int x1, int y1, offscreen_buffer *Buffer, v
 			Pixel += x - (y * Buffer->Width); // start of memory is the top off the buffer but we are drawing bottom to top so we substract y
 		}
 		 
-		*Pixel = ((255 << 0) | (0 << 8) | (255 << 16));
+		*Pixel = ((B << 0) | (G << 8) | (R << 16));
+
 
 	}
 }
@@ -140,14 +148,25 @@ static void DrawLine(int x0, int y0, int x1, int y1, offscreen_buffer *Buffer, v
 static void GameUpdateAndRender(offscreen_buffer *Buffer) {
     RenderWeirdGradient(Buffer, 0, 0);
 
-	vec3 color = vec3(255,0,0);
+	vec3 white = vec3(255, 255, 255);
+	vec3 color0 = vec3(0, 0, 255);
+	vec3 color1 = vec3(255,0,0);
+	vec3 color2 = vec3(255, 0, 255);
+	vec3 color3 = vec3(255, 255, 0);
 
-	DrawLineWithoutCalculatingNumberPixelsNeeded(0, 0, 100, 100, Buffer, color);
+	DrawLineWithoutCalculatingNumberPixelsNeeded(0, 0, 100, 100, Buffer, color0);
 	
-	DrawLine(0, 200, 200, 250, Buffer, color);
-	DrawLine(0, 300, 25, 500, Buffer, color);
+	DrawLine(0, 200, 200, 250, Buffer, color1);
+	DrawLine(0, 300, 25, 500, Buffer, color2);
 
-	DrawRectangleDumbly(200,200,250,250, Buffer, color);
+	DrawRectangleDumbly(0, 200, 10, 210, Buffer, white);
+	DrawRectangleDumbly(200, 250, 210, 260, Buffer, white);
+
+	DrawRectangleDumbly(0, 300, 10, 310, Buffer, white);
+	DrawRectangleDumbly(25, 500, 35, 510, Buffer, white);
+
+
+	DrawRectangleDumbly(200,200,250,250, Buffer, color3);
 }
 
 #endif
